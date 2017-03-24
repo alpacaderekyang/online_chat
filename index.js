@@ -45,7 +45,6 @@ io.on('connection', function(socket) {
       findRecords(db, function (docs) {
         //console.log("Found the following records : ");
         for (var i in docs) {
-          //console.log(docs[i].u_name + " says : "+ docs[i].u_word);
           addrecord(docs[i]);
         }
       });//end of findRecords  //might crash when no records
@@ -130,3 +129,4 @@ http.listen(3000, function(){
 
 
 
+//mytest
