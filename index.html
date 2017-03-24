@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Chat room</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font: 13px Helvetica, Arial; }
+        form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+        form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+        form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+        #messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages li { padding: 5px 10px; }
+        #messages li:nth-child(odd) { background: #eee; }
+        #messages { margin-bottom: 40px }
+    </style>
+    <link rel="stylesheet" type="text/css" href="tooltipster.bundle.min.css" />
+
+  </head>
+
+  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script type="text/javascript" src="tooltipster.bundle.min.js"></script>
+  
+  <script>
+
+    $(function () {
+
+      var socket = io();
+      login();
+
+      $('#textbox').submit(function(){
+        socket.emit('chat message', $('#m').val()); //display message
+        $('#m').val(''); // clean input
+        return false;
+      });
+
+      socket.on('wrong password', function(){
+        alert("密碼錯誤，請重新登入！");
+        login();
+      });
+
+
+      socket.on('chat message', function(data){
+        appendMessage(data.username+":"+data.msg);
+      });  
+
+      socket.on('add user', function(data){
+        appendMessage(data.username+"已加入");
+      });
+
+      socket.on('add record', function(data){
+        appendMessage(data.u_name+":"+data.u_word);
+      });
+
+      socket.on('user left', function(data){
+        appendMessage(data.username+"已離開");
+      });
+
+      function appendMessage(msg){
+        var my_tool = $('<li class="tooltip" title=" hi time"/>')
+           .text(msg);
+
+        $('#messages').append(my_tool);
+        $('.tooltip').tooltipster();
+        var div = document.getElementById("messages");
+        div.scrollTop = div.scrollHeight;
+        //div.scrollTo(0,document.body.scrollHeight);
+      }
+
+      function login() {
+        var name = prompt("請輸入帳號（或輸入guest以訪客登入）\n第一次登入的帳密會自動註冊","guest");
+        if(name == "" || name==null || name=="guest"){
+          name = "guest";
+          socket.emit("guest login");
+        }
+        if(name != "guest") {
+          var password = prompt("請輸入密碼","");
+          
+          while(password==="" || password===null)
+          {
+             password = prompt("no password!!!","");
+          }
+          
+          socket.emit("user login",{
+            username: name,
+            userpassword: password //profile
+          });
+        }
+
+      };//end of function login
+
+    });
+
+  </script>
+
+  <body>
+    <div id="message_block">
+      <ul id="messages"></ul>
+    </div>
+    <form id="textbox">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+  </body>
+
+</html>
