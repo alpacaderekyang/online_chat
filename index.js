@@ -12,12 +12,12 @@ var assert = require('assert');
 
 app.use(express.static(__dirname));
 
-var url = 'mongodb://admin:123@ds145289.mlab.com:45289/eslab1db';
-//var url = 'mongodb://derek:850211@ds145359.mlab.com:45359/eslab1_db';
+//var url = 'mongodb://admin:123@ds145289.mlab.com:45289/eslab1db';
+var url = 'mongodb://derek:850211@ds145359.mlab.com:45359/eslab1_db';
 
 var numUsers = 0;
 var numGuests = 0;
-const clientlist = [];
+const clientlist = []; //global variable
 
 io.on('connection', function(socket) {
 
